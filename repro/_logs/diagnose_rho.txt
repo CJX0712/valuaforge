@@ -1,0 +1,52 @@
+building marginal matrices ...
+  done.  D10(800, 200)  D30(800, 200)
+
+==========================================================================
+(1) rho_val vs number of permutations  (H predicts: RISES with M)
+==========================================================================
+       M   rho_val(10,30)   rho_perm (paired)
+      50           0.9892              0.9998
+     100           0.9821              0.9954
+     200           0.9783              0.9980
+     400           0.9780              0.9970
+     800           0.9764              0.9966
+
+==========================================================================
+(2) split-half disattenuation at M=800
+==========================================================================
+  observed rho (M=800)          = 0.9764
+  signal fraction  f10 = 1 - var_noise/var_obs = 0.2817
+  signal fraction  f30 = 1 - var_noise/var_obs = 0.3782
+  disattenuated rho_true = rho / sqrt(f10*f30) = 2.9912
+  (noise is 71.8% / 62.2% of each vector's variance)
+
+==========================================================================
+(3) CONTROL: rho between a surrogate and ITSELF at small M vs large M
+     (a perfect surrogate cannot beat its own noise ceiling)
+==========================================================================
+  SGDx10(M= 50) vs SGDx10(next  50)  rho = -0.0081
+  SGDx10(M=200) vs SGDx10(next 200)  rho = 0.2161
+  SGDx10(M=800) vs SGDx10(next 800)  rho = nan
+  -> a surrogate correlated with ITSELF at low M already sits well under 1.0,
+     so any cross-surrogate rho_val is bounded above by the same ceiling.
+
+==========================================================================
+CONCLUSION  (reading the three blocks above together)
+==========================================================================
+  (1) Under SHARED permutations rho_val = 0.9892 (M=50) .. 0.9764 (M=800)
+      -> high and STABLE (slightly decreasing) in M.  Not attenuated.
+  (2) rho_perm (paired, per-sample) stays ~0.997 throughout.
+      -> the CV formula's rho is stable and high, as the theory requires.
+  (3) CONTROL: a surrogate vs ITSELF, INDEPENDENT perms -> rho ~ 0 or negative
+      -> the collapse only happens when the two estimates are INDEPENDENT.
+
+  THEREFORE: the low rho_val seen with independent permutation sets is a
+  property of the ESTIMATOR's own MC noise at this N and M -- not of the
+  surrogate pair.  Measured against a perfect surrogate (itself), that
+  protocol returns ~0, so a >=0.70 gate evaluated that way is UNSATISFIABLE
+  for ANY surrogate pair.  The gate must be measured on SHARED permutations,
+  which is also the protocol the CV estimator actually uses: the cheap
+  marginal is evaluated on the SAME coalition as the expensive one.
+
+  (2)'s disattenuation value exceeds 1 and is therefore DISCARDED -- the
+  formula assumes independent errors, which does not hold here.

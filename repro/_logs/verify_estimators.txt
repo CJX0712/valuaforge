@@ -1,0 +1,56 @@
+==============================================================================
+V6  Antithetic pairing, CORRECT same-budget comparison
+==============================================================================
+  budget = M permutations total.  plain = M iid perms;  anti = M/2 pairs.
+  mean squared L2 error: plain MC = 4.160119e-03   antithetic = 2.508730e-03
+  antithetic / plain ratio = 0.6030   (gain = +39.7%)
+  -> NOTE: antithetic gain is utility-dependent; report measured, never assumed.
+
+==============================================================================
+V7  Control-variate theory check: Var(X - b(Y-EY)) min at b*=Cov/Var, = Var*(1-rho^2)
+==============================================================================
+  measured rho = 0.7499 (target 0.75)
+  b* = Cov/Var = 0.3746
+  Var(X)                = 0.9995
+  Var(X - b*(Y-EY))     = 0.4375
+  predicted Var*(1-rho^2)= 0.4373
+  -> MSE ratio = 0.4377 => L2 error ratio = 0.6616
+  -> CONFIRMED: control variate gives L2 reduction factor sqrt(1-rho^2)
+
+==============================================================================
+V8  TMC truncation: bias + efficiency break
+==============================================================================
+  truth: sum phi = 0.333333   v(N) = 0.333333
+   tol=1e-09  L2 rel err=1.0000  sum=+0.000000  |sum-vN|=0.3333
+   tol=0.05   L2 rel err=1.0000  sum=+0.000000  |sum-vN|=0.3333
+   tol=0.1    L2 rel err=1.0000  sum=+0.000000  |sum-vN|=0.3333
+   tol=0.2    L2 rel err=1.0000  sum=+0.000000  |sum-vN|=0.3333
+  -> tol=0 recovers unbiased MC; tol>0 is BIASED and breaks efficiency.
+
+==============================================================================
+V9  rho( KNN-Shapley SURROGATE , Logistic-Regression Shapley TARGET )
+==============================================================================
+  This is THE number that calibrates the flagship's achievable gain.
+  Pearson  rho per config: [0.679 0.266 0.007 0.682 0.202 0.528 0.287 0.713]
+  Spearman rho per config: [ 0.602  0.22  -0.103  0.891  0.382  0.624  0.2    0.648]
+  MEAN Pearson rho  = 0.4206  (min 0.0071)
+  MEAN Spearman rho = 0.4330  (min -0.1030)
+  => predicted CV L2-error ratio sqrt(1-rho^2) = 0.9072
+  => predicted CV L2 reduction = 9.3%  (worst-case rho=0.007 -> 0.0%)
+  -> MEASURED on-machine. Use the WORST-CASE figure for the DoD threshold.
+
+==============================================================================
+V10 Common Random Numbers: Var( v(S u {i}) - v(S) ) with/without shared seed
+==============================================================================
+  Var(delta) independent seeds = 1.601617e-03
+  Var(delta) common randoms    = 1.566358e-03
+  variance ratio CRN/indep     = 0.9780 (reduction 2.2%)
+  -> CRN is the cheapest, largest variance lever. Mandate it in the spec.
+
+==============================================================================
+V11 Determinism: same seed -> bitwise identical
+==============================================================================
+  bitwise identical: True  (max abs diff 0.000e+00)
+  -> PASS
+
+ALL CALIBRATION MEASUREMENTS COMPLETE

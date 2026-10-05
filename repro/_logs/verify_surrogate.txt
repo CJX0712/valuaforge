@@ -1,0 +1,35 @@
+==============================================================================
+V9b  rho(cheap-surrogate Shapley , target Shapley)  -- the DoD calibration
+==============================================================================
+  surrogate   mean rho   min rho sqrt(1-r^2)@min  L2 cut @min
+  ------------------------------------------------------------
+  sgd3          0.8575    0.6831          0.7303        27.0%
+  sgd10         0.9300    0.8475          0.5307        46.9%
+  sgd30         0.9754    0.9464          0.3231        67.7%
+  halfval       0.9450    0.8538          0.5206        47.9%
+  knn5          0.7243    0.2860          0.9582         4.2%
+
+  Interpretation: L2 cut @min = the CV gain you can still claim on the WORST config.
+  Same-model-class surrogates (sgd*) should dominate the cross-class one (knn5).
+
+==============================================================================
+V10b CRN done properly: fixed init + fixed MASTER update stream, filter by subset
+==============================================================================
+  Var(delta) independent = 1.904382e-03
+  Var(delta) CRN         = 4.373333e-04
+  ratio = 0.2296  -> variance reduction 77.0%
+  -> If this is large, CRN is a first-class lever; if small, report it honestly.
+
+==============================================================================
+V8b TMC truncation WITH burn-in (truncation may not fire before |S| >= burn_in)
+==============================================================================
+  truth sum phi = 0.333333   v(N) = 0.333333   ||phi|| = 0.397412
+   burn_in=1    tol=0.05  L2 rel err=1.0000  sum=+0.00000  |sum-vN|=0.33333
+   burn_in=1    tol=0.2   L2 rel err=1.0000  sum=+0.00000  |sum-vN|=0.33333
+   burn_in=4    tol=0.05  L2 rel err=0.6093  sum=+0.94528  |sum-vN|=0.61195
+   burn_in=4    tol=0.2   L2 rel err=0.6093  sum=+0.94528  |sum-vN|=0.61195
+   burn_in=999  tol=0.05  L2 rel err=0.0069  sum=+0.33333  |sum-vN|=0.00000
+   burn_in=999  tol=0.2   L2 rel err=0.0069  sum=+0.33333  |sum-vN|=0.00000
+  -> burn_in=999 == no truncation (unbiased baseline). Compare against it.
+
+DECISIVE CALIBRATION COMPLETE

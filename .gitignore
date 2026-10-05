@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.installed.cfg
+MANIFEST
+
+# Virtualenvs -- never commit an interpreter; requirements.txt is the contract
+.venv/
+venv/
+env/
+ENV/
+
+# Test / lint / coverage caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+junit*.xml
+
+# Data caches and downloaded corpora (regenerate from data/loader.py, fixed seed)
+data/cache/
+data/raw/
+*.npy
+*.npz
+!tests/**/*.npy
+
+# Model weights / checkpoints
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.onnx
+*.joblib
+models/
+checkpoints/
+
+# Secrets -- never commit credentials
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials.json
+service-account*.json
+id_rsa
+id_ed25519
+
+# Run artifacts. benchmark*.json is a generated product, not source: the
+# determinism gate (G5) re-runs and git-diffs it, so committing a stale copy
+# would let a broken run look green.
+results/
+benchmark*.json
+!repro/_logs/*.txt
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# NOTE: the Phase 1 `_scratch/` directory was DELETED, not just ignored.
+# It held stale forks of `repro/*.py`, one of which still carried the retracted
+# `DEGRADATION TRIGGERED` verdict -- running it contradicted repro/ and the spec.
+# Keeping an ignore rule for a directory that no longer exists would leave a
+# ghost entry implying "something used to be here". The lesson is recorded in
+# repro/README.md; the evidence lives in repro/, which IS tracked.

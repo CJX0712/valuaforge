@@ -1,0 +1,41 @@
+# Normalise line endings in the repository, not in the working tree.
+#
+# Why this matters here: the determinism gate (G5) re-runs the benchmark and
+# compares the artifact with `git diff --exit-code`. With core.autocrlf=true on
+# Windows, a file committed with LF is checked out with CRLF, so a regenerated
+# file can differ purely by line ending while the numbers are identical. That
+# turns a reproducibility check into a coin flip.
+#
+# input:  commit LF (canonical, so hashes and diffs are stable across platforms)
+# output: LF in the working tree too, so "what you see is what was committed"
+#       and regenerating a file produces no spurious diff.
+* text=auto eol=lf
+
+# Binary files must never be touched.
+#
+# One pattern per line on purpose. In a multi-pattern line only the LAST pattern
+# may carry attributes, so "*.png *.jpg binary" silently leaves "*.jpg" invalid
+# and git prints "*.jpg is not a valid attribute name" on every single command.
+# Verbose, but it parses.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.whl binary
+*.npy binary
+*.npz binary
+*.pt binary
+*.pth binary
+*.h5 binary
+*.onnx binary
+*.joblib binary
+*.pkl binary
+
+# Generated artifacts are not committed, but keep the rule explicit.
+results/** text eol=lf
+repro/_logs/*.txt text eol=lf
+repro/_logs/*.json text eol=lf

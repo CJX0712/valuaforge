@@ -1,0 +1,514 @@
+{
+  "A: DETERMINISTIC utility": {
+    "rows": [
+      {
+        "baseline": "oracle_shuffle(truth)",
+        "l2_rel": 1.502566132748368,
+        "spearman": -0.5393939393939393,
+        "spearman_valid": true,
+        "n_distinct": 10,
+        "n_utility_evals": 0,
+        "note": "NEGATIVE CONTROL"
+      },
+      {
+        "baseline": "random_vector",
+        "l2_rel": 18.6227440459316,
+        "spearman": -0.23636363636363633,
+        "spearman_valid": true,
+        "n_distinct": 10,
+        "n_utility_evals": 0,
+        "note": "NEGATIVE CONTROL"
+      },
+      {
+        "baseline": "constant_vector",
+        "l2_rel": 17.593596947260433,
+        "spearman": NaN,
+        "spearman_valid": false,
+        "n_distinct": 1,
+        "n_utility_evals": 0,
+        "note": "degenerate -> I23"
+      },
+      {
+        "baseline": "loo",
+        "l2_rel": 0.8932029023834194,
+        "spearman": 0.5617690055391232,
+        "spearman_valid": true,
+        "n_distinct": 3,
+        "n_utility_evals": 11,
+        "note": ""
+      },
+      {
+        "baseline": "beta_shapley(1,4)",
+        "l2_rel": 0.7645866363219161,
+        "spearman": 0.6121212121212121,
+        "spearman_valid": true,
+        "n_distinct": 10,
+        "n_utility_evals": 400,
+        "note": ""
+      },
+      {
+        "baseline": "tmc_DEFAULT(tol.2,b1,M20)",
+        "l2_rel": 6.341995786196519,
+        "spearman": -0.3038588464025609,
+        "spearman_valid": true,
+        "n_distinct": 6,
+        "n_utility_evals": 201,
+        "note": "un-tuned"
+      },
+      {
+        "baseline": "tmc_TUNED(200, 0.0, 1)",
+        "l2_rel": 0.9332398025825202,
+        "spearman": 0.9515151515151514,
+        "spearman_valid": true,
+        "n_distinct": 10,
+        "n_utility_evals": 2001,
+        "note": "grid=24 combos"
+      },
+      {
+        "baseline": "ValuaFuse",
+        "l2_rel": 0.9607744210789467,
+        "spearman": 0.8909090909090909,
+        "spearman_valid": true,
+        "n_distinct": 10,
+        "n_utility_evals": 2000,
+        "note": "flagship cross-fitted beta=-0.139"
+      },
+      {
+        "baseline": "exact_truth",
+        "l2_rel": 0.0,
+        "spearman": 0.9999999999999999,
+        "spearman_valid": true,
+        "n_distinct": 10,
+        "n_utility_evals": 0,
+        "note": "target (L2Rel=0)"
+      }
+    ],
+    "grid": [
+      {
+        "M_perm": 20,
+        "tol": 0.0,
+        "burn_in": 1,
+        "l2_rel": 1.027710286725692,
+        "n_utility_evals": 201
+      },
+      {
+        "M_perm": 20,
+        "tol": 0.0,
+        "burn_in": 4,
+        "l2_rel": 1.027710286725692,
+        "n_utility_evals": 201
+      },
+      {
+        "M_perm": 20,
+        "tol": 0.05,
+        "burn_in": 1,
+        "l2_rel": 3.6156238042535502,
+        "n_utility_evals": 201
+      },
+      {
+        "M_perm": 20,
+        "tol": 0.05,
+        "burn_in": 4,
+        "l2_rel": 3.272213271520433,
+        "n_utility_evals": 201
+      },
+      {
+        "M_perm": 20,
+        "tol": 0.2,
+        "burn_in": 1,
+        "l2_rel": 6.416089482952484,
+        "n_utility_evals": 201
+      },
+      {
+        "M_perm": 20,
+        "tol": 0.2,
+        "burn_in": 4,
+        "l2_rel": 5.30219961657486,
+        "n_utility_evals": 201
+      },
+      {
+        "M_perm": 50,
+        "tol": 0.0,
+        "burn_in": 1,
+        "l2_rel": 0.9749415756543108,
+        "n_utility_evals": 501
+      },
+      {
+        "M_perm": 50,
+        "tol": 0.0,
+        "burn_in": 4,
+        "l2_rel": 0.9749415756543108,
+        "n_utility_evals": 501
+      },
+      {
+        "M_perm": 50,
+        "tol": 0.05,
+        "burn_in": 1,
+        "l2_rel": 3.6342498544736523,
+        "n_utility_evals": 501
+      },
+      {
+        "M_perm": 50,
+        "tol": 0.05,
+        "burn_in": 4,
+        "l2_rel": 2.79639253186852,
+        "n_utility_evals": 501
+      },
+      {
+        "M_perm": 50,
+        "tol": 0.2,
+        "burn_in": 1,
+        "l2_rel": 6.487030459223761,
+        "n_utility_evals": 501
+      },
+      {
+        "M_perm": 50,
+        "tol": 0.2,
+        "burn_in": 4,
+        "l2_rel": 4.450366279188308,
+        "n_utility_evals": 501
+      },
+      {
+        "M_perm": 100,
+        "tol": 0.0,
+        "burn_in": 1,
+        "l2_rel": 0.9674935506849746,
+        "n_utility_evals": 1001
+      },
+      {
+        "M_perm": 100,
+        "tol": 0.0,
+        "burn_in": 4,
+        "l2_rel": 0.9674935506849746,
+        "n_utility_evals": 1001
+      },
+      {
+        "M_perm": 100,
+        "tol": 0.05,
+        "burn_in": 1,
+        "l2_rel": 3.761289205328783,
+        "n_utility_evals": 1001
+      },
+      {
+        "M_perm": 100,
+        "tol": 0.05,
+        "burn_in": 4,
+        "l2_rel": 2.7720117319948443,
+        "n_utility_evals": 1001
+      },
+      {
+        "M_perm": 100,
+        "tol": 0.2,
+        "burn_in": 1,
+        "l2_rel": 6.173744170444814,
+        "n_utility_evals": 1001
+      },
+      {
+        "M_perm": 100,
+        "tol": 0.2,
+        "burn_in": 4,
+        "l2_rel": 4.420026514875391,
+        "n_utility_evals": 1001
+      },
+      {
+        "M_perm": 200,
+        "tol": 0.0,
+        "burn_in": 1,
+        "l2_rel": 0.9332398025825202,
+        "n_utility_evals": 2001
+      },
+      {
+        "M_perm": 200,
+        "tol": 0.0,
+        "burn_in": 4,
+        "l2_rel": 0.9332398025825202,
+        "n_utility_evals": 2001
+      },
+      {
+        "M_perm": 200,
+        "tol": 0.05,
+        "burn_in": 1,
+        "l2_rel": 3.554771853734477,
+        "n_utility_evals": 2001
+      },
+      {
+        "M_perm": 200,
+        "tol": 0.05,
+        "burn_in": 4,
+        "l2_rel": 2.54032868172604,
+        "n_utility_evals": 2001
+      },
+      {
+        "M_perm": 200,
+        "tol": 0.2,
+        "burn_in": 1,
+        "l2_rel": 6.116000721031818,
+        "n_utility_evals": 2001
+      },
+      {
+        "M_perm": 200,
+        "tol": 0.2,
+        "burn_in": 4,
+        "l2_rel": 4.306962957976082,
+        "n_utility_evals": 2001
+      }
+    ],
+    "n_exact": 1024
+  },
+  "B: STOCHASTIC utility": {
+    "rows": [
+      {
+        "baseline": "oracle_shuffle(truth)",
+        "l2_rel": 1.4689360380822916,
+        "spearman": -0.3939393939393939,
+        "spearman_valid": true,
+        "n_distinct": 10,
+        "n_utility_evals": 0,
+        "note": "NEGATIVE CONTROL"
+      },
+      {
+        "baseline": "random_vector",
+        "l2_rel": 16.369111026830033,
+        "spearman": 0.18787878787878787,
+        "spearman_valid": true,
+        "n_distinct": 10,
+        "n_utility_evals": 0,
+        "note": "NEGATIVE CONTROL"
+      },
+      {
+        "baseline": "constant_vector",
+        "l2_rel": 19.054362801208963,
+        "spearman": NaN,
+        "spearman_valid": false,
+        "n_distinct": 1,
+        "n_utility_evals": 0,
+        "note": "degenerate -> I23"
+      },
+      {
+        "baseline": "loo",
+        "l2_rel": 0.8257614740942126,
+        "spearman": 0.6379932514169493,
+        "spearman_valid": true,
+        "n_distinct": 4,
+        "n_utility_evals": 11,
+        "note": ""
+      },
+      {
+        "baseline": "beta_shapley(1,4)",
+        "l2_rel": 0.8199296447360234,
+        "spearman": 0.43030303030303024,
+        "spearman_valid": true,
+        "n_distinct": 10,
+        "n_utility_evals": 400,
+        "note": ""
+      },
+      {
+        "baseline": "tmc_DEFAULT(tol.2,b1,M20)",
+        "l2_rel": 4.2945761776910185,
+        "spearman": -0.42520767164689127,
+        "spearman_valid": true,
+        "n_distinct": 7,
+        "n_utility_evals": 201,
+        "note": "un-tuned"
+      },
+      {
+        "baseline": "tmc_TUNED(200, 0.0, 1)",
+        "l2_rel": 0.9665339681506417,
+        "spearman": 0.9030303030303028,
+        "spearman_valid": true,
+        "n_distinct": 10,
+        "n_utility_evals": 2001,
+        "note": "grid=24 combos"
+      },
+      {
+        "baseline": "ValuaFuse",
+        "l2_rel": 0.9963676458244912,
+        "spearman": 0.7575757575757575,
+        "spearman_valid": true,
+        "n_distinct": 10,
+        "n_utility_evals": 2000,
+        "note": "flagship cross-fitted beta=+0.218"
+      },
+      {
+        "baseline": "exact_truth",
+        "l2_rel": 0.0,
+        "spearman": 0.9999999999999999,
+        "spearman_valid": true,
+        "n_distinct": 10,
+        "n_utility_evals": 0,
+        "note": "target (L2Rel=0)"
+      }
+    ],
+    "grid": [
+      {
+        "M_perm": 20,
+        "tol": 0.0,
+        "burn_in": 1,
+        "l2_rel": 1.378961301333479,
+        "n_utility_evals": 201
+      },
+      {
+        "M_perm": 20,
+        "tol": 0.0,
+        "burn_in": 4,
+        "l2_rel": 1.378961301333479,
+        "n_utility_evals": 201
+      },
+      {
+        "M_perm": 20,
+        "tol": 0.05,
+        "burn_in": 1,
+        "l2_rel": 4.097454534830511,
+        "n_utility_evals": 201
+      },
+      {
+        "M_perm": 20,
+        "tol": 0.05,
+        "burn_in": 4,
+        "l2_rel": 3.5281551376786666,
+        "n_utility_evals": 201
+      },
+      {
+        "M_perm": 20,
+        "tol": 0.2,
+        "burn_in": 1,
+        "l2_rel": 6.020000622272392,
+        "n_utility_evals": 201
+      },
+      {
+        "M_perm": 20,
+        "tol": 0.2,
+        "burn_in": 4,
+        "l2_rel": 5.259280059160541,
+        "n_utility_evals": 201
+      },
+      {
+        "M_perm": 50,
+        "tol": 0.0,
+        "burn_in": 1,
+        "l2_rel": 1.0884334203378017,
+        "n_utility_evals": 501
+      },
+      {
+        "M_perm": 50,
+        "tol": 0.0,
+        "burn_in": 4,
+        "l2_rel": 1.0884334203378017,
+        "n_utility_evals": 501
+      },
+      {
+        "M_perm": 50,
+        "tol": 0.05,
+        "burn_in": 1,
+        "l2_rel": 4.047757084400962,
+        "n_utility_evals": 501
+      },
+      {
+        "M_perm": 50,
+        "tol": 0.05,
+        "burn_in": 4,
+        "l2_rel": 2.999564548828671,
+        "n_utility_evals": 501
+      },
+      {
+        "M_perm": 50,
+        "tol": 0.2,
+        "burn_in": 1,
+        "l2_rel": 4.904943164121979,
+        "n_utility_evals": 501
+      },
+      {
+        "M_perm": 50,
+        "tol": 0.2,
+        "burn_in": 4,
+        "l2_rel": 4.554525454768018,
+        "n_utility_evals": 501
+      },
+      {
+        "M_perm": 100,
+        "tol": 0.0,
+        "burn_in": 1,
+        "l2_rel": 0.9713012781833573,
+        "n_utility_evals": 1001
+      },
+      {
+        "M_perm": 100,
+        "tol": 0.0,
+        "burn_in": 4,
+        "l2_rel": 0.9713012781833573,
+        "n_utility_evals": 1001
+      },
+      {
+        "M_perm": 100,
+        "tol": 0.05,
+        "burn_in": 1,
+        "l2_rel": 3.870455588883215,
+        "n_utility_evals": 1001
+      },
+      {
+        "M_perm": 100,
+        "tol": 0.05,
+        "burn_in": 4,
+        "l2_rel": 2.7262129289663846,
+        "n_utility_evals": 1001
+      },
+      {
+        "M_perm": 100,
+        "tol": 0.2,
+        "burn_in": 1,
+        "l2_rel": 5.681999059510816,
+        "n_utility_evals": 1001
+      },
+      {
+        "M_perm": 100,
+        "tol": 0.2,
+        "burn_in": 4,
+        "l2_rel": 4.058907027494222,
+        "n_utility_evals": 1001
+      },
+      {
+        "M_perm": 200,
+        "tol": 0.0,
+        "burn_in": 1,
+        "l2_rel": 0.9665339681506417,
+        "n_utility_evals": 2001
+      },
+      {
+        "M_perm": 200,
+        "tol": 0.0,
+        "burn_in": 4,
+        "l2_rel": 0.9665339681506417,
+        "n_utility_evals": 2001
+      },
+      {
+        "M_perm": 200,
+        "tol": 0.05,
+        "burn_in": 1,
+        "l2_rel": 3.7925591589152443,
+        "n_utility_evals": 2001
+      },
+      {
+        "M_perm": 200,
+        "tol": 0.05,
+        "burn_in": 4,
+        "l2_rel": 2.67050717644888,
+        "n_utility_evals": 2001
+      },
+      {
+        "M_perm": 200,
+        "tol": 0.2,
+        "burn_in": 1,
+        "l2_rel": 4.922141051715249,
+        "n_utility_evals": 2001
+      },
+      {
+        "M_perm": 200,
+        "tol": 0.2,
+        "burn_in": 4,
+        "l2_rel": 3.991799998359319,
+        "n_utility_evals": 2001
+      }
+    ],
+    "n_exact": 1024
+  }
+}

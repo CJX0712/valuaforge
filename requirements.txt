@@ -1,0 +1,36 @@
+# ValuaForge pinned dependencies.
+# Author: 晨星
+#
+# Hand-written `name==version` lines, deliberately NOT the output of `pip freeze`.
+# `pip freeze` in a venv records local editable installs as `pkg @ file:///C:/.../...`,
+# and such a "lock" cannot be installed on any other machine. A lock that cannot be
+# installed is not a lock. (Measured in Phase 0.)
+#
+# Windows note: if pip fails with `OSError: Missing dependencies for SOCKS support`
+# or a 502 tunnel error, add `--proxy "" --index-url https://pypi.org/simple`.
+# pip 26 reads a SOCKS source from the Windows registry, so clearing shell
+# environment variables alone does not help (pitfall library D).
+#
+# Every pin below has a win_amd64 + cp313 prebuilt wheel: no source builds, no
+# MSVC/cmake required. Verified in Phase 1 (docs/phase1_report.md section A.2).
+
+# --- Tier-0: required. The whole system runs end-to-end on these two. ---
+numpy==2.5.3
+scipy==1.18.1
+
+# --- Tier-1: optional. sklearn is ONLY a cross-check backend for the utility
+# layer and metrics. If absent, those rows are marked `skipped`, never faked.
+# Note the interface gap: sklearn's random_state cannot make retraining
+# filter-level deterministic, so CRN requires the hand-written numpy utility.
+# See repro/README.md.
+scikit-learn==1.9.1
+
+# --- transitive, pinned so a clean CI env resolves identically ---
+joblib==1.6.0
+threadpoolctl==3.7.0
+
+# --- dev / CI ---
+pytest==9.1.1
+pytest-cov==7.1.0
+coverage==7.16.2
+ruff==0.16.10

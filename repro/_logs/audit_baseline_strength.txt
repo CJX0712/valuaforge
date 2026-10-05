@@ -1,0 +1,119 @@
+C:\Users\Administrator\WorkBuddy\2026-10-05-03-14-04\valuaforge\repro\audit_baseline_strength.py:254: RuntimeWarning: Mean of empty slice
+  xf, df = Xbar[fit_sl], dY[fit_sl]
+C:\Users\Administrator\.workbuddy\binaries\python\envs\valuaforge\Lib\site-packages\numpy\_core\_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+
+##############################################################################
+# TRACK A: DETERMINISTIC utility   n=10  p=5  utility=det
+# exact truth: 1024 utility evals, 4.7s
+##############################################################################
+  oracle_shuffle(truth)      L2Rel=  1.5026  rho=-0.5394  n_distinct= 10  evals=     0  NEGATIVE CONTROL
+  random_vector              L2Rel= 18.6227  rho=-0.2364  n_distinct= 10  evals=     0  NEGATIVE CONTROL
+  constant_vector            L2Rel= 17.5936  rho=    nan (INVALID)  n_distinct=  1  evals=     0  degenerate -> I23
+  loo                        L2Rel=  0.8932  rho= 0.5618  n_distinct=  3  evals=    11  
+  beta_shapley(1,4)          L2Rel=  0.7646  rho= 0.6121  n_distinct= 10  evals=   400  
+  tmc_DEFAULT(tol.2,b1,M20)  L2Rel=  6.3420  rho=-0.3039  n_distinct=  6  evals=   201  un-tuned
+  tmc_TUNED(200, 0.0, 1)     L2Rel=  0.9332  rho= 0.9515  n_distinct= 10  evals=  2001  grid=24 combos
+  ValuaFuse                  L2Rel=  0.9608  rho= 0.8909  n_distinct= 10  evals=  2000  flagship cross-fitted beta=-0.139
+  exact_truth                L2Rel=  0.0000  rho= 1.0000  n_distinct= 10  evals=     0  target (L2Rel=0)
+
+##############################################################################
+# TRACK B: STOCHASTIC utility   n=10  p=5  utility=stoch
+# exact truth: 1024 utility evals, 0.9s
+##############################################################################
+  oracle_shuffle(truth)      L2Rel=  1.4689  rho=-0.3939  n_distinct= 10  evals=     0  NEGATIVE CONTROL
+  random_vector              L2Rel= 16.3691  rho= 0.1879  n_distinct= 10  evals=     0  NEGATIVE CONTROL
+  constant_vector            L2Rel= 19.0544  rho=    nan (INVALID)  n_distinct=  1  evals=     0  degenerate -> I23
+  loo                        L2Rel=  0.8258  rho= 0.6380  n_distinct=  4  evals=    11  
+  beta_shapley(1,4)          L2Rel=  0.8199  rho= 0.4303  n_distinct= 10  evals=   400  
+  tmc_DEFAULT(tol.2,b1,M20)  L2Rel=  4.2946  rho=-0.4252  n_distinct=  7  evals=   201  un-tuned
+  tmc_TUNED(200, 0.0, 1)     L2Rel=  0.9665  rho= 0.9030  n_distinct= 10  evals=  2001  grid=24 combos
+  ValuaFuse                  L2Rel=  0.9964  rho= 0.7576  n_distinct= 10  evals=  2000  flagship cross-fitted beta=+0.218
+  exact_truth                L2Rel=  0.0000  rho= 1.0000  n_distinct= 10  evals=     0  target (L2Rel=0)
+
+==============================================================================
+A: DETERMINISTIC utility -- DoD SUBSTITUTION ATTACK
+==============================================================================
+  baseline substituted in          L2Rel  ratio VF/base  verdict
+  oracle_shuffle(truth)           1.5026         0.6394  PASS
+  random_vector                  18.6227         0.0516  PASS
+  constant_vector                17.5936         0.0546  PASS
+  loo                             0.8932         1.0757  FAIL
+  beta_shapley(1,4)               0.7646         1.2566  FAIL
+  tmc_DEFAULT(tol.2,b1,M20)       6.3420         0.1515  PASS
+  tmc_TUNED(200, 0.0, 1)          0.9332         1.0295  FAIL
+  ValuaFuse                       0.9608         1.0000  FAIL
+
+==============================================================================
+B: STOCHASTIC utility -- DoD SUBSTITUTION ATTACK
+==============================================================================
+  baseline substituted in          L2Rel  ratio VF/base  verdict
+  oracle_shuffle(truth)           1.4689         0.6783  PASS
+  random_vector                  16.3691         0.0609  PASS
+  constant_vector                19.0544         0.0523  PASS
+  loo                             0.8258         1.2066  FAIL
+  beta_shapley(1,4)               0.8199         1.2152  FAIL
+  tmc_DEFAULT(tol.2,b1,M20)       4.2946         0.2320  PASS
+  tmc_TUNED(200, 0.0, 1)          0.9665         1.0309  FAIL
+  ValuaFuse                       0.9964         1.0000  FAIL
+
+==============================================================================
+HARD GATES  (G1: L2Rel(tuned TMC) <= 0.7 x L2Rel(shuffle))
+==============================================================================
+
+  A: DETERMINISTIC utility
+    tuned TMC L2Rel            = 0.9332
+    oracle-shuffle L2Rel       = 1.5026
+    TMC default L2Rel          = 6.3420  (tuning gain = 85.3%)
+    G1 closes >= 30% of shuffle->truth gap : PASS  (0.6211 <= 0.7, closed 37.9%)
+       NOTE: a '0.1x' form would need 0.6211 <= 0.1 -- UNREACHABLE, the ratio is bounded by sqrt(2)~1.414 by construction
+    G2 beats >=3 weaker           : PASS  (n=4: oracle_shuffle, random_vector, constant_vecto, tmc_DEFAULT(to)
+    G3 reverse protection (>= 0.02) : PASS
+
+  B: STOCHASTIC utility
+    tuned TMC L2Rel            = 0.9665
+    oracle-shuffle L2Rel       = 1.4689
+    TMC default L2Rel          = 4.2946  (tuning gain = 77.5%)
+    G1 closes >= 30% of shuffle->truth gap : PASS  (0.6580 <= 0.7, closed 34.2%)
+       NOTE: a '0.1x' form would need 0.6580 <= 0.1 -- UNREACHABLE, the ratio is bounded by sqrt(2)~1.414 by construction
+    G2 beats >=3 weaker           : PASS  (n=4: oracle_shuffle, random_vector, constant_vecto, tmc_DEFAULT(to)
+    G3 reverse protection (>= 0.02) : PASS
+
+==============================================================================
+TUNED-TMC GRID (spec 4.3) -- evidence that tuning actually happened
+==============================================================================
+
+  A: DETERMINISTIC utility  (24 combos)
+    best 5:
+      M=200 tol=0.0   burn_in=1  L2Rel=0.9332  evals=2001
+      M=200 tol=0.0   burn_in=4  L2Rel=0.9332  evals=2001
+      M=100 tol=0.0   burn_in=1  L2Rel=0.9675  evals=1001
+      M=100 tol=0.0   burn_in=4  L2Rel=0.9675  evals=1001
+      M= 50 tol=0.0   burn_in=1  L2Rel=0.9749  evals=501
+    worst: M= 50 tol=0.2   burn_in=1  L2Rel=6.4870
+    grid spread: best 0.9332 .. worst 6.4870   (ratio 7.0x)
+
+  B: STOCHASTIC utility  (24 combos)
+    best 5:
+      M=200 tol=0.0   burn_in=1  L2Rel=0.9665  evals=2001
+      M=200 tol=0.0   burn_in=4  L2Rel=0.9665  evals=2001
+      M=100 tol=0.0   burn_in=1  L2Rel=0.9713  evals=1001
+      M=100 tol=0.0   burn_in=4  L2Rel=0.9713  evals=1001
+      M= 50 tol=0.0   burn_in=1  L2Rel=1.0884  evals=501
+    worst: M= 20 tol=0.2   burn_in=1  L2Rel=6.0200
+    grid spread: best 0.9665 .. worst 6.0200   (ratio 6.2x)
+
+==============================================================================
+benchmark.json FIELD CONTRACT (per baseline)
+==============================================================================
+  - l2_rel
+  - spearman
+  - n_distinct
+  - n_utility_evals
+  - tuned_grid
+  tuned_grid must contain EVERY combo of the spec 4.3 grid, not just the winner,
+  so the audit can verify the baseline was genuinely tuned.
+
+  exact-truth cost: 1024 utility evals (this is why N<=12 is the gold-standard ceiling)
+
+wrote repro/_logs/audit_baseline_strength.json

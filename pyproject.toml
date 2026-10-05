@@ -1,0 +1,126 @@
+# ValuaForge —— 数据估值 / Data Shapley（Data Valuation）
+# 作者：晨星
+#
+# 两条铁律（踩坑库 §H / §G）：
+#
+# 1. 顺序：本文件必须在任何 `ruff format` 之前落盘。否则先按默认 88 列 format、
+#    之后才改成 96 列，CI 的 `ruff format --check` 必红。
+#
+# 2. 布局：core / data / valuation / eval / pipeline 是**平级顶层包**，不是嵌套子包。
+#    因此统一绝对导入 `core.xxx`；`from ..core import x` 会 ImportError。
+#    pytest 需 pythonpath = ["."]，否则干净环境 CI 报 ModuleNotFoundError。
+#
+# 本仓从源码直接运行，不做 pip install；CI 用 requirements.txt 装依赖。
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "valuaforge"
+version = "0.1.0"
+description = "ValuaForge - Data Valuation (Data Shapley / data point attribution)"
+authors = [{ name = "晨星", email = "CJX0712@users.noreply.github.com" }]
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+# Tier-0 必须够跑通端到端；sklearn 仅作 Tier-1 utility 模型与指标交叉校验。
+dependencies = ["numpy==2.5.3", "scipy==1.18.1"]
+
+[project.optional-dependencies]
+tier1 = ["scikit-learn==1.9.1"]
+dev = ["pytest==9.1.1", "pytest-cov==7.1.0", "coverage==7.16.2", "ruff==0.16.10"]
+
+[project.scripts]
+valuaforge = "cli:main"
+
+[tool.setuptools]
+# 平级顶层包，新增包时同步补一行。
+packages = ["core"]
+
+# ---------------------------------------------------------------------------
+# ruff：line-length 必须在首次 format 之前定好（见文件头铁律 1）
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 96
+target-version = "py312"
+# 注：Phase 1 的 `_scratch/` 已删除（不是仅忽略），理由见 .gitignore 与
+# repro/README.md。保留一条指向不存在目录的 exclude 只会留下幽灵条目，
+# 让人误以为"这里曾经有过东西"。repro/ 是受版本控制的唯一证据目录。
+extend-exclude = [".venv", "build", "dist"]
+
+[tool.ruff.lint]
+# E/W pycodestyle、F pyflakes、I isort、UP pyupgrade、B bugbear、
+# SIM simplify、RUF ruff 专属、PL pylint、NPY numpy、ARG 未用参数。
+# 只选本仓真会被触发、且能实际修掉的规则组。
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "PL", "NPY", "ARG"]
+ignore = [
+    "E501",    # 行宽由 formatter 统一裁决，避免与 format 互相打架
+    "PLR0913", # 算法核函数天然参数多
+    "PLR0912", # 分支数是数值内核的本质
+    "PLR0915", # 同上，语句数
+    "PLR2004", # 维度常量（ndim != 2 等）直读更清楚
+  "PLR0917", # 同 PLR0913：数值内核按位置传操作数更清楚
+]
+
+[tool.ruff.lint.per-file-ignores]
+# 测试里的 fixture 参数按设计未使用；魔数是断言本身的一部分。
+"tests/*" = ["ARG001", "ARG002", "PLR0917"]
+# available_*() 惰性探测必须把 import 放在函数内：探测要能做到"不付 import 代价、
+# 不触发被探测包副作用"。这是踩坑库 §G 的惰性工厂模式，全局关掉 PLC0415 会
+# 掩盖其它真正该上移的 import，故只对白名单文件开口子。
+"core/registry.py" = ["PLC0415"]
+# 所有估值器共用 core.interfaces.ValuationMethod 的同一套签名
+# (data, utility, budget, rng)，因此某个实现不用其中某个参数是**契约的一部分**，
+# 不是疏忽：随机基线不消耗预算，精确法不需要 rng。逐个改名会掩盖真实接口。
+"valuation/*" = ["ARG002"]
+# examples/ 必须先把仓库根塞进 sys.path（`python examples/x.py` 只把 examples/ 加进去，
+# 平级顶层包就 import 不到），这迫使后续 import 出现在代码之后，属结构性而非疏忽。
+"examples/*" = ["E402"]
+# repro/ 是 Phase 1 的**证据脚本**（规格书 V1~V15 全部实测数字的可复现来源），不是库代码，
+# 断言已在 tests/ 里提升为正式 pytest，故此处按"可读性优先"开口子。
+#   B023：这些 lambda 捕获循环变量 (X, y, Xv, yv) 后**在同一轮迭代内被立即完全消费**
+#         （作为 vfun 传入 brute_shapley_general 并当场跑完），不存在延迟执行。
+#         反证：V1 在 540 组配置上实测 max|闭式-暴力| = 1.78e-15，若存在闭包泄漏，
+#         闭式解不可能与暴力枚举吻合到机器精度。
+#   PLR0917：数学函数签名天然长（shapley/beta/influence 都带 N,K,a,b 等），
+#         与业务代码里"参数过多=职责不清晰"不是一回事；tests/* 已同样开口。
+#   E731/RUF005/B007/ARG001：一次性验证脚本，可读性优先。
+#   F841/RUF059：标定过程刻意保留未使用的中间量（如 vN、best_meter），
+#         它们标出"这里本该有个量但没用上"，删掉反而丢失信息。
+#   PLC0415：脚本必须能脱离包、单独 `python repro/x.py` 运行。
+"repro/*" = [
+    "B023", "PLR0917", "E731", "RUF005", "B007", "ARG001",
+    "F841", "RUF059", "PLC0415", "F401",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["core", "data", "valuation", "eval", "pipeline", "cli"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+# ---------------------------------------------------------------------------
+# pytest：pythonpath 是干净环境 CI 的救命项（踩坑库 §H）
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "9.0"
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers --strict-config"
+filterwarnings = ["ignore::DeprecationWarning"]
+markers = [
+    "slow: 耗时用例，不进默认门禁",
+]
+
+[tool.coverage.run]
+# core/ 是底座，valuation/ 是算法主体——两者都要纳入，否则交付物的覆盖率是假的。
+# data/ eval/ pipeline/ 尚未落地，落地后一并加进来。
+source = ["core", "valuation"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false

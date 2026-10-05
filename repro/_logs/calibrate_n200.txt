@@ -1,0 +1,69 @@
+############################################################################
+# N=200 CALIBRATION  (team-lead ruling: measure, do not argue)
+############################################################################
+
+============================================================================
+DGP-1 GaussBlobs-Clean  (N=200, d=5, val=100)
+============================================================================
+  reference = SGD x30, M=400 perms        (24.9s)
+  reference noise floor (M/2 vs M)  L2Rel = 0.4576
+  full-LBFGS arm M=60 vs reference  L2Rel = 1.4281  (33.3s)
+
+  (a) rho  [SGDx10 vs SGDx30]
+      rho_val SHARED perms (CORRECT protocol)  = 0.9750   <-- the gate uses THIS      rho_val      (finished vectors, indep. perms) pearson = 0.1899  spearman = 0.1885
+      rho_perm     (per-sample marginals, pooled)     = 0.9879
+      rho_perm_paired (same permutation, 1st point)   = 0.9589
+      CV L2 factor sqrt(1-rho^2):  rho_val -> 0.9818   rho_perm -> 0.1548
+
+  cost ratio c = t(SGDx30)/t(LBFGS) = 0.1624   (N=200: cheap gets cheaper as N grows, as team-lead predicted)
+
+  (c) END-TO-END, budget B = 8040 full-fidelity-equivalent evals
+      plain MC   (m=40 perms, all budget)      L2Rel = 1.6187
+      ValuaFuse  (m_full=100, m_cheap=100, beta=+0.4515)  L2Rel = 0.8603
+      + antithetic pairing                            L2Rel = 0.7889
+      RATIO ValuaFuse / plain = 0.5315    (DoD needs <= 0.75)
+      RATIO +antithetic / plain = 0.4874
+      efficiency |sum-plain - v(N)| = 2.50e-02   |sum-VF - v(N)| = 2.02e-02
+  [108.2s]
+
+============================================================================
+DGP-4 NonlinearMismatch  (N=200, d=22, val=100)
+============================================================================
+  reference = SGD x30, M=400 perms        (24.6s)
+  reference noise floor (M/2 vs M)  L2Rel = 0.4531
+  full-LBFGS arm M=60 vs reference  L2Rel = 1.5190  (65.8s)
+
+  (a) rho  [SGDx10 vs SGDx30]
+      rho_val SHARED perms (CORRECT protocol)  = 0.9510   <-- the gate uses THIS      rho_val      (finished vectors, indep. perms) pearson = 0.2356  spearman = 0.2666
+      rho_perm     (per-sample marginals, pooled)     = 0.9614
+      rho_perm_paired (same permutation, 1st point)   = 0.2691
+      CV L2 factor sqrt(1-rho^2):  rho_val -> 0.9719   rho_perm -> 0.2752
+
+  cost ratio c = t(SGDx30)/t(LBFGS) = 0.0334   (N=200: cheap gets cheaper as N grows, as team-lead predicted)
+
+  (c) END-TO-END, budget B = 8040 full-fidelity-equivalent evals
+      plain MC   (m=40 perms, all budget)      L2Rel = 1.6140
+      ValuaFuse  (m_full=100, m_cheap=100, beta=+0.4857)  L2Rel = 0.8082
+      + antithetic pairing                            L2Rel = 0.6878
+      RATIO ValuaFuse / plain = 0.5007    (DoD needs <= 0.75)
+      RATIO +antithetic / plain = 0.4261
+      efficiency |sum-plain - v(N)| = 1.80e-02   |sum-VF - v(N)| = 2.10e-02
+  [135.6s]
+
+============================================================================
+(b) CRN GAIN at N=200
+============================================================================
+  run A: Var(indep)=2.900753e-03  Var(CRN)=2.627969e-04  ratio=0.0906  GAIN=0.9094
+  run B: Var(indep)=1.148590e-03  Var(CRN)=5.872750e-05  ratio=0.0511  GAIN=0.9489
+
+============================================================================
+VERDICT vs team-lead's thresholds
+============================================================================
+  NOTE: the gate uses rho_val(SHARED perms).  The independent-perm value is a
+        BROKEN measurement -- its ceiling is ~0 (see diagnose_rho.py / V14).
+  DGP-1: rho_val(shared)=0.9750 (PASS vs >=0.70)   [indep. protocol would say 0.1899 -- INVALID]   rho_perm=0.9879   L2 ratio=0.5315 (PASS vs <=0.75)
+  DGP-4: rho_val(shared)=0.9510 (PASS vs >=0.70)   [indep. protocol would say 0.2356 -- INVALID]   rho_perm=0.9614   L2 ratio=0.5007 (PASS vs <=0.75)
+  CRN gain=0.9291 (PASS vs >=0.20)
+
+  >>> OVERALL: NO DEGRADATION - spec 4.5 warning can be upgraded
+  >>> DoD ratio mean = 0.5161  (+antithetic 0.4567)

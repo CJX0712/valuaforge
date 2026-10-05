@@ -1,0 +1,66 @@
+================================================================================================
+n=10  exact truth cost = 1024 evals
+================================================================================================
+
+--- 口径 A: EQUAL EVALUATION BUDGET ---
+  method                         L2Rel     raw    equiv  note
+  loo                           0.9017      11       11  n+1 evals
+  beta_equal_budget             0.7470    1810     1810  M=181 perms
+  tmc_equal_budget              0.9046    1811     1811  M=181 perms, tol=0
+  valuafuse_equal_budget        0.8638    5160     1892  86 full + 86 cheap perms, beta_hat=+0.453
+  >> strongest baseline = beta_equal_budget (0.7470)   ValuaFuse ratio = 1.1563  FAIL
+
+--- 口径 B: EQUAL PERMUTATION COUNT (algorithm only) ---
+  method                         L2Rel     raw    equiv  note
+  beta_equal_perms              0.7683     200      200  M=20
+  tmc_equal_perms               1.4101     201      201  M=20, tol=0
+  valuafuse_equal_perms         0.8699    1200      440  M=20 full perms
+  >> strongest baseline = beta_equal_perms (0.7683)   ValuaFuse ratio = 1.1323  FAIL
+
+########################################################################################################
+# C. SCALE DEPENDENCE  (exact truth at every n, repeated over seeds)
+########################################################################################################
+    n  seeds                     best-baseline L2                 ValuaFuse L2  ratio mean         ratio min..max           beta_hat
+    8      3        loo=0.484 tmc=0.585 loo=0.359            0.730 0.582 0.455      1.2561    0.9950..1.5079       +0.49 +0.44 +0.45
+   10      3        loo=0.597 tmc=0.517 tmc=0.620            0.735 0.500 0.610      1.0599    0.9659..1.2315       +0.47 +0.46 +0.46
+   12      3        tmc=0.602 tmc=0.614 loo=0.645            0.582 0.616 0.733      1.0359    0.9680..1.1358       +0.48 +0.43 +0.48
+
+========================================================================================================
+VERDICT ON SCALE TREND  (pre-registered criterion: monotone decrease)
+========================================================================================================
+  n=  8  ratio mean=1.2561  range 0.9950..1.5079  per-seed [1.508, 0.995, 1.266]
+  n= 10  ratio mean=1.0599  range 0.9659..1.2315  per-seed [1.231, 0.966, 0.982]
+  n= 12  ratio mean=1.0359  range 0.9680..1.1358  per-seed [0.968, 1.004, 1.136]
+
+  means monotone decreasing? YES
+  WORST-CASE (max over seeds) monotone decreasing? YES
+  spread(max-min) per n: [0.513, 0.266, 0.168]
+
+  beta_hat across all (n, seed): [0.49, 0.44, 0.45, 0.47, 0.46, 0.46, 0.48, 0.43, 0.48]
+  beta_hat monotone in n? NO -- and it is NOT the explanation
+
+  DATA-DRIVEN READING (no hardcoded expectations):
+   * ratio mean by n        : [1.2561, 1.0599, 1.0359]
+   * means monotone decreasing? YES
+   * n whose WORST seed still clears 0.75 : NONE
+   * n whose BEST seed clears 0.75        : NONE
+   * per-seed spread [0.5129362893728918, 0.2655492930491927, 0.16780640120648327] shrinking with n? YES
+
+   HONEST CONCLUSION:
+   ** ValuaFuse does NOT reach the 0.75 DoD at ANY exactly-verifiable
+      scale (n=8/10/12), under ANY of the 3 seeds. Every ratio > 1.0,
+      i.e. the flagship loses to the strongest baseline at every n tested.
+      A single-seed run earlier appeared to show n=12 PASSING at 0.7278;
+      that was seed luck and is hereby RETRACTED. **
+
+   * The pre-registered criterion (monotone decrease) is NOT met on the
+     seed-mean. Per team-lead's instruction, that means the n=10 FAIL vs
+     n=200 PASS gap is NOT explained by a clean monotone mechanism, and
+     at least one of those two numbers is noise.
+   * beta_hat is NOT monotone in n, so the control variate is NOT the
+     explanation. Mechanism reported as UNRESOLVED.
+   * The one trend that IS clean: per-seed spread shrinks with n
+     (0.53 -> 0.27 -> 0.18), i.e. more averaging, less variance. But the
+     MEAN ratio plateaus near 1.07, so this does not reach the DoD.
+   * n<=12 only. NOT extrapolated to n>=200 (no exact truth there).
+wrote repro/_logs/scale_and_budget.json

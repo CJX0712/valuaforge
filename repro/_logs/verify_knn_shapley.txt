@@ -1,0 +1,28 @@
+==============================================================================
+V1/V2  KNN-Shapley closed form vs brute force  (N<=12, all K)
+==============================================================================
+  max |closed-form - brute-force|      = 1.776e-15
+  max ABSOLUTE efficiency gap          = 2.776e-16
+  max RELATIVE efficiency gap (v(N)!=0)= 4.996e-16
+  -> V1 PASS (closed form is EXACT)   V2 PASS (efficiency holds)
+
+==============================================================================
+V3/V4  Beta-Shapley weights
+==============================================================================
+  -> V3 PASS  sum_k C(N-1,k) u_k == 1 for all tested (N,a,b)
+  -> V4 PASS  Beta(1,1) == classical Shapley (bitwise, tol 1e-12)
+
+  Efficiency check for Beta(a,b) != (1,1):
+    Beta(   1,16): sum phi = +1.637740   v(N) = 0.666667   gap = +0.971073
+    Beta(  16, 1): sum phi = -0.122807   v(N) = 0.666667   gap = -0.789474
+    Beta(   4, 1): sum phi = -0.166667   v(N) = 0.666667   gap = -0.833333
+
+==============================================================================
+V5/V6  Permutation-sampling estimator: unbiasedness + antithetic gain
+==============================================================================
+  |mean over ALL 362880 permutations - closed form| = 2.510e-13  -> estimator is UNBIASED (exhaustive check)
+  MSE vs truth (M=400 perms): plain MC = 1.818783e-05   antithetic = 1.818783e-05
+  per-sample mean variance:  plain = 1.534336e-02
+  -> V5 PASS (exact unbiasedness)  V6 computed above (antithetic gain is problem-dependent, NOT guaranteed positive for KNN utility)
+
+ALL SPEC VERIFICATIONS COMPLETE

@@ -1,0 +1,167 @@
+# ValuaForge CI -- lint -> test -> demo smoke, on every matrix cell.
+# Author: 晨星
+#
+# Rules baked in (pitfall library H):
+#   * ruff is pinned to 0.16.10 (matches local and requirements.txt);
+#   * NO step may use `|| true`, `continue-on-error`, or `set +e`. A gate that
+#     cannot fail reports nothing -- that is how a "green" CI ends up lying;
+#   * `ruff format --check` runs because formatting 88-col first and 96-col
+#     later guarantees a red build;
+#   * pyproject.toml sets `pythonpath = ["."]`, otherwise a clean checkout
+#     raises ModuleNotFoundError while passing locally;
+#   * the demo step is a real subprocess exit-code check, not a log grep.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: ${{ matrix.os }} / py${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Any single cell failing fails the whole job: no continue-on-error here.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install pinned dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          # Assert the pin actually took effect rather than trusting the file.
+          ruff --version
+
+      - name: Lint (ruff check)
+        run: ruff check .
+
+      - name: Format check (ruff format --check)
+        run: ruff format --check .
+
+      - name: Test (pytest)
+        # No --cov=<pkg> here on purpose: the source list lives in
+        # pyproject.toml [tool.coverage.run]. Overriding it here created a second
+        # place to forget -- valuation/ would silently report 0% forever.
+        run: python -m pytest -q --cov --cov-report=term-missing
+
+      - name: Demo smoke (CLI must exit 0)
+        run: |
+          python -m cli info
+          python -m cli methods
+          python -m cli errors
+          python -m cli seed "val/tmc/digits/7"
+
+      - name: Negative smoke (unimplemented subcommand must NOT exit 0)
+        # The skeleton ships core/ only. `benchmark` must fail loudly, otherwise
+        # a Makefile target or a future CI step reads "measured nothing" as green.
+        #
+        # Written as a Python subprocess check rather than shell `$?` because:
+        #   * the matrix includes windows-latest, where the shell is pwsh;
+        #   * `set +e` / `|| true` are banned by this workflow's own rules, and
+        #     `bash -e` would abort the step on the very non-zero exit we want
+        #     to assert. A subprocess sees the code without disabling anything.
+        run: |
+          python - <<'PY'
+          import subprocess, sys
+          r = subprocess.run([sys.executable, "-m", "cli", "benchmark"],
+                             capture_output=True, text=True)
+          if r.returncode == 0:
+              print("FAIL: benchmark exited 0 while the pipeline is missing.")
+              print("That is exactly the 'measured nothing but looks green' failure.")
+              sys.exit(1)
+          if "E300" not in r.stderr:
+              print("FAIL: expected a structured E300 on stderr, got:")
+              print(r.stderr[-500:])
+              sys.exit(1)
+          print(f"benchmark correctly refused to report success (exit {r.returncode}, E300 on stderr)")
+          PY
+
+      - name: Secret scan
+        run: |
+          python - <<'PY'
+          import re, subprocess, sys
+          # Self-contained so it runs identically on ubuntu and windows runners.
+          pat = re.compile(r"(sk-[A-Za-z0-9]{16,}|api[_-]?key\s*[=:]\s*['\"][^'\"]{8,}|password\s*[=:]\s*['\"][^'\"]+)", re.I)
+          files = subprocess.run(["git", "ls-files"], capture_output=True, text=True, check=True).stdout.split()
+          hits = []
+          for f in files:
+              if not f.endswith((".py", ".md", ".toml", ".yml", ".yaml", ".txt", ".cfg", ".ini")):
+                  continue
+              try:
+                  text = open(f, encoding="utf-8", errors="ignore").read()
+              except OSError:
+                  continue
+              for m in pat.finditer(text):
+                  hits.append(f"{f}: {m.group(0)[:60]}")
+          if hits:
+              print("SECRET SCAN FAILED:\n" + "\n".join(hits))
+              sys.exit(1)
+          print("secret scan: clean")
+          PY
+
+  repro-smoke:
+    # The V1-V11 evidence scripts are slow (brute force over 2^N subsets), so they
+    # do NOT gate every push. They run on the main branch and on manual dispatch
+    # only -- a cited number that cannot be re-run is not evidence.
+    name: repro evidence (V1-V11)
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+      - name: verify_knn_shapley (V1-V6)
+        run: python repro/verify_knn_shapley.py
+      - name: verify_estimators (V7-V11)
+        run: python repro/verify_estimators.py
+      - name: verify_surrogate (V9b/V10b/V8b)
+        run: python repro/verify_surrogate.py
+      - name: diagnose_rho (V14)
+        # Proves the rho protocol-sensitivity result. If this one breaks, every
+        # rho number quoted in the spec loses its "valid protocol" label.
+        run: python repro/diagnose_rho.py
+      - name: calibrate_n200 (V12-V13, V15)
+        # Slowest step in the job (minutes). It is the only thing that re-derives
+        # the N=200 ratios quoted by the DoD, so it must not be optional.
+        run: python repro/calibrate_n200.py
+      - name: audit_baseline_strength (fake-win guard)
+        # Pitfall A: a "win" that comes from an under-tuned baseline is the most
+        # common silent failure in this domain. This script is the guard for it,
+        # which makes it DoD evidence rather than a nice-to-have.
+        # Runtime NOT measured locally (it exceeded a foreground run); the
+        # timeout below is deliberately generous. If it trips, raise it rather
+        # than deleting the step.
+        timeout-minutes: 45
+        run: python repro/audit_baseline_strength.py
+      - name: audit_scale_and_budget (n=10 exact-truth track)
+        # Owns the small-n track where the flagship currently LOSES to the
+        # strongest baseline. That negative result is the most important number
+        # in the project, so the script that produces it must be re-runnable.
+        timeout-minutes: 45
+        run: python repro/audit_scale_and_budget.py

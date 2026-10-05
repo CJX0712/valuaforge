@@ -1,0 +1,238 @@
+{
+  "aggregate": {
+    "beta": {
+      "full_equiv_mean": 504.0,
+      "kendall_mean": 0.181848241863327,
+      "l2_rel_mean": 0.8594917328996248,
+      "l2_rel_min": 0.8594917328996248,
+      "l2_rel_std": 0.0,
+      "n_seeds": 1.0,
+      "n_skipped": 0.0,
+      "spearman_mean": 0.34731161595484505,
+      "utility_evals_mean": 504.0
+    },
+    "loo": {
+      "full_equiv_mean": 9.0,
+      "kendall_mean": 0.90267093384844,
+      "l2_rel_mean": 1.6503709866569398,
+      "l2_rel_min": 1.6503709866569398,
+      "l2_rel_std": 0.0,
+      "n_seeds": 1.0,
+      "n_skipped": 0.0,
+      "spearman_mean": 0.9569026338151702,
+      "utility_evals_mean": 9.0
+    },
+    "rng_baseline": {
+      "full_equiv_mean": 0.0,
+      "kendall_mean": -0.7637626158259733,
+      "l2_rel_mean": 9.343772383766664,
+      "l2_rel_min": 9.343772383766664,
+      "l2_rel_std": 0.0,
+      "n_seeds": 1.0,
+      "n_skipped": 0.0,
+      "spearman_mean": -0.8982196964349441,
+      "utility_evals_mean": 0.0
+    },
+    "shuffle_truth": {
+      "full_equiv_mean": 0.0,
+      "kendall_mean": -0.7407407407407407,
+      "l2_rel_mean": 0.388532055899921,
+      "l2_rel_min": 0.388532055899921,
+      "l2_rel_std": 0.0,
+      "n_seeds": 1.0,
+      "n_skipped": 0.0,
+      "spearman_mean": -0.8554216867469878,
+      "utility_evals_mean": 0.0
+    },
+    "tmc": {
+      "full_equiv_mean": 0.0,
+      "kendall_mean": NaN,
+      "l2_rel_mean": NaN,
+      "l2_rel_min": NaN,
+      "l2_rel_std": 0.0,
+      "n_seeds": 0.0,
+      "n_skipped": 1.0,
+      "spearman_mean": NaN,
+      "utility_evals_mean": 512.0
+    },
+    "valuafuse": {
+      "full_equiv_mean": 529.2,
+      "kendall_mean": 0.5455447255899809,
+      "l2_rel_mean": 0.16904039971555945,
+      "l2_rel_min": 0.16904039971555945,
+      "l2_rel_std": 0.0,
+      "n_seeds": 1.0,
+      "n_skipped": 0.0,
+      "spearman_mean": 0.7664808076244857,
+      "utility_evals_mean": 1008.0
+    }
+  },
+  "dod": {
+    "all_baselines": {
+      "beta": 0.8594917328996248,
+      "loo": 1.6503709866569398
+    },
+    "baseline_l2_rel": 0.8594917328996248,
+    "flagship_l2_rel": 0.16904039971555945,
+    "n_seeds": 1,
+    "ratio": 0.19667484077511277,
+    "strongest_baseline": "beta",
+    "threshold": 0.75,
+    "verdict": "PASS"
+  },
+  "meta": {
+    "budget": 512,
+    "budget_currencies": {
+      "cheap_call_equiv": 0.05,
+      "n_calls_full_equiv": "n_calls_full + 0.05 * n_calls_cheap",
+      "n_calls_raw": "every utility.evaluate call, surrogate calls included",
+      "note": "raw alone overstates a surrogate-using method; equivalent alone understates its real call pressure. Both are required."
+    },
+    "d": 6,
+    "datasets": [
+      "gaussian_mixture"
+    ],
+    "determinism": {
+      "checked": false
+    },
+    "failures": [
+      "gaussian_mixture/tmc/7: BudgetExhaustedError: [E301] utility evaluation budget exhausted | max_utility_evals=512, n_evals=512"
+    ],
+    "gold": "exact enumeration (anchor A, 2^n)",
+    "gold_absolute": true,
+    "n": 8,
+    "n_val": 16,
+    "seeds": [
+      7
+    ]
+  },
+  "rows": [
+    {
+      "dataset": "gaussian_mixture",
+      "method": "valuafuse",
+      "metrics": {
+        "beta_hat": -0.03874424216252322,
+        "diag_beta_hat": -0.03874424216252322,
+        "diag_f1_active": 0.0,
+        "diag_f2_crn": 1.0,
+        "diag_f3_antithetic": 1.0,
+        "diag_n_calls_cheap": 504.0,
+        "diag_n_calls_full": 504.0,
+        "diag_n_perm_used": 28.0,
+        "diag_rho_CV": -0.1437386949987526,
+        "f1_active": 0.0,
+        "kendall": 0.5455447255899809,
+        "l2_rel": 0.16904039971555945,
+        "rho_CV": -0.1437386949987526,
+        "skipped": 0.0,
+        "spearman": 0.7664808076244857,
+        "topk_jaccard": 0.3333333333333333
+      },
+      "n_calls_cheap": 504,
+      "n_calls_full": 504,
+      "n_calls_full_equiv": 529.2,
+      "n_calls_raw": 1008,
+      "n_utility_evals": 1008,
+      "seed": 7,
+      "tier": "tier0",
+      "wall_seconds": 0.09243570000035106
+    },
+    {
+      "dataset": "gaussian_mixture",
+      "method": "tmc",
+      "metrics": {
+        "kendall": null,
+        "l2_rel": null,
+        "skip_reason": "BudgetExhaustedError: [E301] utility evaluation budget exhausted | max_utility_evals=512, n_evals=512",
+        "skipped": 1.0,
+        "spearman": null,
+        "topk_jaccard": null,
+        "traceback": "on\\tmc.py\", line 207, in value\n    phi, _, n_perm_used = tmc_once(utility, n, rng, capped)\n                          ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Administrator\\WorkBuddy\\2026-10-05-03-14-04\\valuaforge\\valuation\\tmc.py\", line 93, in tmc_once\n    now = utility.evaluate(np.asarray(arrived, dtype=np.int64))\n  File \"C:\\Users\\Administrator\\WorkBuddy\\2026-10-05-03-14-04\\valuaforge\\valuation\\utility.py\", line 109, in evaluate\n    self._check_affordable()\n    ~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"C:\\Users\\Administrator\\WorkBuddy\\2026-10-05-03-14-04\\valuaforge\\valuation\\utility.py\", line 101, in _check_affordable\n    raise BudgetExhaustedError(\n    ...<3 lines>...\n    )\ncore.errors.BudgetExhaustedError: [E301] utility evaluation budget exhausted | max_utility_evals=512, n_evals=512\n"
+      },
+      "n_calls_cheap": 0,
+      "n_calls_full": 0,
+      "n_calls_full_equiv": 0.0,
+      "n_calls_raw": 512,
+      "n_utility_evals": 512,
+      "seed": 7,
+      "tier": "tier0",
+      "wall_seconds": 0.029643299996678252
+    },
+    {
+      "dataset": "gaussian_mixture",
+      "method": "beta",
+      "metrics": {
+        "kendall": 0.181848241863327,
+        "l2_rel": 0.8594917328996248,
+        "skipped": 0.0,
+        "spearman": 0.34731161595484505,
+        "topk_jaccard": 0.0
+      },
+      "n_calls_cheap": 0,
+      "n_calls_full": 504,
+      "n_calls_full_equiv": 504.0,
+      "n_calls_raw": 504,
+      "n_utility_evals": 504,
+      "seed": 7,
+      "tier": "tier0",
+      "wall_seconds": 0.02588619999733055
+    },
+    {
+      "dataset": "gaussian_mixture",
+      "method": "loo",
+      "metrics": {
+        "kendall": 0.90267093384844,
+        "l2_rel": 1.6503709866569398,
+        "skipped": 0.0,
+        "spearman": 0.9569026338151702,
+        "topk_jaccard": 0.3333333333333333
+      },
+      "n_calls_cheap": 0,
+      "n_calls_full": 9,
+      "n_calls_full_equiv": 9.0,
+      "n_calls_raw": 9,
+      "n_utility_evals": 9,
+      "seed": 7,
+      "tier": "tier0",
+      "wall_seconds": 0.0005477000013343059
+    },
+    {
+      "dataset": "gaussian_mixture",
+      "method": "rng_baseline",
+      "metrics": {
+        "kendall": -0.7637626158259733,
+        "l2_rel": 9.343772383766664,
+        "skipped": 0.0,
+        "spearman": -0.8982196964349441,
+        "topk_jaccard": 0.0
+      },
+      "n_calls_cheap": 0,
+      "n_calls_full": 0,
+      "n_calls_full_equiv": 0.0,
+      "n_calls_raw": 0,
+      "n_utility_evals": 0,
+      "seed": 7,
+      "tier": "tier0",
+      "wall_seconds": 3.520000245771371e-05
+    },
+    {
+      "dataset": "gaussian_mixture",
+      "method": "shuffle_truth",
+      "metrics": {
+        "kendall": -0.7407407407407407,
+        "l2_rel": 0.388532055899921,
+        "skipped": 0.0,
+        "spearman": -0.8554216867469878,
+        "topk_jaccard": 0.0
+      },
+      "n_calls_cheap": 0,
+      "n_calls_full": 0,
+      "n_calls_full_equiv": 0.0,
+      "n_calls_raw": 0,
+      "n_utility_evals": 0,
+      "seed": 7,
+      "tier": "tier0",
+      "wall_seconds": 2.2700001863995567e-05
+    }
+  ]
+}

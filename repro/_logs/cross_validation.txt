@@ -1,0 +1,40 @@
+============================================================================================
+CROSS-VALIDATION  n=10 seed=7 budget=2000
+============================================================================================
+
+[1] ENUMERATOR on v(S)=|S|/n   (analytic answer = 1/n per player)
+    valuation/brute.py vs analytic : max|gap| = 6.939e-17
+    repro/         vs analytic     : max|gap| = 6.939e-17
+    bitwise identical to each other: True
+    bitwise identical to analytic : False
+
+[2] ORACLE with valuation/ LogregUtility (exact enumeration)
+    RAISED -> UtilityUndefinedError: [E303] utility undefined: subset has a single class | n_rows=1
+    ^ single-class subsets are refused by their utility (E303).
+
+[3] CONVENTION DIVERGENCE on a single-class subset {one row}
+    valuation/utility.py : RAISED UtilityUndefinedError (E303)
+    repro/ (plain L-BFGS): returned 0.783333
+    => the two implementations have different v(S) here, hence different
+       exact Shapley. SPEC AMBIGUITY (spec 2.1 is silent on single-class
+       subsets) -- must be pinned before any bitwise oracle comparison.
+
+[4] ESTIMATOR layer, same data, same utility=sgd, same budget
+    valuation/ ValuaFuse : evals=  1980  ||phi||=0.203994
+    repro/    valuafuse  : evals=  5160  ||phi||=0.207621   beta_hat=+0.3004
+    L2 distance between the two estimates : 0.035155  (relative 0.1693)
+    efficiency |sum(phi)-(vN-v0)|  valuation/=1.110e-16  repro/=2.728e-03
+      diag.beta_hat = 0.054315732335123705
+
+============================================================================================
+VERDICT
+============================================================================================
+  [1] enumerators agree bitwise on a known-answer game : PASS
+  [3] utility convention divergence                     : FOUND (needs a spec ruling)
+  [4] estimator bitwise comparison                      : NOT ATTEMPTED
+      The two codes enumerate permutations from different rng call sequences,
+      so bitwise equality is not a well-posed requirement there.  It becomes
+      well-posed only after [3] is pinned, because until the utilities agree on
+      single-class subsets the two estimates are answering different questions.
+
+  No number was tuned to make anything agree.
