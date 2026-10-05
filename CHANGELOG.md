@@ -72,6 +72,24 @@
 - **`Config(methods=())` 误抛 E101** → 只对 `seeds`/`datasets` 要求非空
 - **守卫反噬**：`NaN > 1e-14` 为 False ⟹ NaN 被翻译成「β=0 → CV 已关闭」⟹ 改 `isfinite` 前置
 
+### 🔁 补充（n=200 cross-fit 重跑 · 2026-10-05）
+
+`repro/recalibrate_n200.py` 用**折外 cross-fit** 重跑 n=200（修正 `calibrate_n200.py` 的
+in-sample β 污染），预算 42210 等价单位、100 排列、参考 SGDx30@400：
+
+| DGP | 估计器 | 比值 vs plain | 判定 |
+|---|---|---|---|
+| DGP-1 (n=200,d=5) | ValuaFuse form A（2-batch） | 0.7567 | ❌ FAIL |
+| DGP-1 | ValuaFuse **form B（per-perm cross-fit）** | **0.5451** | ✅ PASS |
+| DGP-4 (n=200,d=22) | ValuaFuse form A（2-batch） | 0.7704 | ❌ FAIL |
+| DGP-4 | ValuaFuse **form B（per-perm cross-fit）** | **0.5815** | ✅ PASS |
+
+**结论（非推翻 C 级阻断）**：form B 在 n=200 确实通过 DoD，证实旧 n=200 数字作废仅因
+样本内 β；但 form A 仍败、小 N 精确区仍败、n=200 无精确真值 ⟹ **C 级阻断维持**。
+L10（n=200 口径不干净）**部分解封**：form B 路径可引用，form A 与小 N 仍禁引。
+详见 `BLOCKED.md` §2.4.1、`docs/model_card.md` L10。`recalibrate_n200.py` 与
+`repro/_logs/recalibrate_n200.txt` 已进仓库。
+
 ---
 
 ## [0.1.0] — Phase 2：骨架与确定性底座
