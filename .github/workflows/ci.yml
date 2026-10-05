@@ -85,6 +85,10 @@ jobs:
         # Written as a Python subprocess check rather than a shell exit assert
         # because `cli benchmark` returns 1 on a non-PASS verdict; running it
         # directly under `bash -e` would make the step fail for the wrong reason.
+        #
+        # `shell: bash` is required: the Python heredoc below is a bash construct
+        # and throws a PowerShell ParserError on windows-latest (its default shell).
+        shell: bash
         run: |
           python - <<'PY'
           import json, subprocess, sys, pathlib
@@ -103,6 +107,8 @@ jobs:
           PY
 
       - name: Secret scan
+        # `shell: bash` for the same PowerShell-heredoc reason as Benchmark smoke.
+        shell: bash
         run: |
           python - <<'PY'
           import re, subprocess, sys

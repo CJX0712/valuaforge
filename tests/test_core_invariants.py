@@ -329,7 +329,7 @@ def test_explicit_overrides_beat_env() -> None:
         ("knn_k", 0),
         ("beta_alpha", 0.0),  # below minimum
         ("noise_frac", 1.5),  # above maximum
-        ("n_jobs", 8),  # capped on Windows
+        ("n_jobs", 100),  # above the platform cap (1 on nt, 64 on posix) -> raises on every OS
         ("utility_model", "not_a_model"),  # not in choices
         ("seed", -1),
         ("seed", 2**32),
