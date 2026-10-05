@@ -70,29 +70,36 @@ jobs:
           python -m cli errors
           python -m cli seed "val/tmc/digits/7"
 
-      - name: Negative smoke (unimplemented subcommand must NOT exit 0)
-        # The skeleton ships core/ only. `benchmark` must fail loudly, otherwise
-        # a Makefile target or a future CI step reads "measured nothing" as green.
+      - name: Benchmark smoke (pipeline must run end-to-end)
+        # `benchmark` is now implemented (pipeline/benchmark.py + cli.py). The
+        # skeleton-era rule "benchmark must refuse with E300" is obsolete: the
+        # pipeline measures real valuations and exits 0/1 on the DoD verdict.
         #
-        # Written as a Python subprocess check rather than shell `$?` because:
-        #   * the matrix includes windows-latest, where the shell is pwsh;
-        #   * `set +e` / `|| true` are banned by this workflow's own rules, and
-        #     `bash -e` would abort the step on the very non-zero exit we want
-        #     to assert. A subprocess sees the code without disabling anything.
+        # The performance DoD is a SEPARATE C-level gate tracked in BLOCKED.md
+        # and the repro scripts, so this step only proves the pipeline runs and
+        # writes results/benchmark.json. It must NOT fail on a non-PASS verdict
+        # (which is expected on the default grid and is the whole point of the
+        # C-level block). `--no-determinism` keeps the 4-cell gate matrix fast;
+        # the double-run determinism check is exercised by repro-smoke on main.
+        #
+        # Written as a Python subprocess check rather than a shell exit assert
+        # because `cli benchmark` returns 1 on a non-PASS verdict; running it
+        # directly under `bash -e` would make the step fail for the wrong reason.
         run: |
           python - <<'PY'
-          import subprocess, sys
-          r = subprocess.run([sys.executable, "-m", "cli", "benchmark"],
+          import json, subprocess, sys, pathlib
+          r = subprocess.run([sys.executable, "-m", "cli", "benchmark",
+                              "--no-determinism"],
                              capture_output=True, text=True)
-          if r.returncode == 0:
-              print("FAIL: benchmark exited 0 while the pipeline is missing.")
-              print("That is exactly the 'measured nothing but looks green' failure.")
+          for line in (r.stdout + r.stderr).splitlines()[-12:]:
+              print(line)
+          p = pathlib.Path("results/benchmark.json")
+          if not p.exists():
+              print("FAIL: benchmark did not write results/benchmark.json")
               sys.exit(1)
-          if "E300" not in r.stderr:
-              print("FAIL: expected a structured E300 on stderr, got:")
-              print(r.stderr[-500:])
-              sys.exit(1)
-          print(f"benchmark correctly refused to report success (exit {r.returncode}, E300 on stderr)")
+          data = json.loads(p.read_text(encoding="utf-8"))
+          verdict = data.get("dod", {}).get("verdict")
+          print(f"benchmark smoke OK: artifact present (dod verdict={verdict})")
           PY
 
       - name: Secret scan
