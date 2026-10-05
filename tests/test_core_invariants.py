@@ -9,7 +9,6 @@ Author: 晨星
 
 from __future__ import annotations
 
-import os
 import pathlib
 import re
 import subprocess
@@ -117,15 +116,11 @@ def test_stream_is_stable_across_processes() -> None:
             capture_output=True,
             text=True,
             check=True,
-            # Inherit the full parent environment so the child interpreter can
-            # launch on every OS (an empty PATH broke this on Linux runners). Only
-            # PYTHONPATH (repo root, for `core`) and PYTHONHASHSEED (the variable
-            # under test) are overridden; the seed override wins because it is set
-            # after the spread.
             env={
-                **os.environ,
-                "PYTHONPATH": str(pathlib.Path(__file__).resolve().parents[1]),
+                "PATH": "",
+                "PYTHONPATH": str(__import__("pathlib").Path(__file__).resolve().parents[1]),
                 "PYTHONHASHSEED": hash_seed,
+                "SYSTEMROOT": __import__("os").environ.get("SYSTEMROOT", ""),
             },
         )
         runs.append(proc.stdout.strip())
